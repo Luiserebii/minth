@@ -24,7 +24,6 @@ int run(int argc, char* argv[]) {
     } else {
         //Nothing matched, so just display help and exit
         cout << mainopts.help() << endl;
-        cout << termcolor::blue;
         return 0;
     }
 }

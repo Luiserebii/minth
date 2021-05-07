@@ -3,3 +3,4 @@
 ethwall
 compile_commands.json
 .clangd/
+test/test
