@@ -1,7 +1,6 @@
 #include <iostream>
+#include "../include/cli/cli.h"
 
-using std::cout;
-
-int main() {
-    cout << "cool ethwallet tricks Ξ\n";
+int main(int argc, char* argv[]) {
+    return cli::run(argc, argv);
 }

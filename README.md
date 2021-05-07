@@ -1,3 +1,5 @@
 # Ξ ETH-WALLET
 
-a wallet for eth
+a meme eth-wallet impl
+
+vitalik pls
