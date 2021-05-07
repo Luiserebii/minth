@@ -16,5 +16,6 @@
     * Payload of RLP Encode + ECDSA Sig 
     * Note: Request network (mainnet, ropsten, rinkeby)
     * Print transaction hex to stdout
+  * Godbolt - tmux of vim and solc asm output
 
 Just do each function for each key found in file.

@@ -1,4 +1,4 @@
-INCLUDE_FLAGS=-I./lib/cxxopts-2.2.1/include
+INCLUDE_FLAGS=-I./lib/cxxopts-2.2.1/include -I./lib/termcolor-2.0.0/include
 CFLAGS= -g3 -Wall -Wextra -Wvla $(INCLUDE_FLAGS)
 CC=g++
 OUT_PRG=ethwall
