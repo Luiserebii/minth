@@ -35,7 +35,7 @@ secp256k1n = 1157920892373161954235709850086879078528375642790749043826051631415
 
 Note that secp256k1n is the order n of G [2].
 
-Thus, randomly generate 256 bits of random. Use POSIX `ssize_t getrandom(void *buf, size_t buflen, unsigned int flags)` for CSPRNG, which uses /dev/urandom [3]. To store these large numbers (2^256), use GNU's GMP [4]. Note that `CHAR_BIT` from `<limits.h` or `<climits>` will be useful to calculate our buffer size [5].
+Thus, randomly generate 256 bits of random. Use POSIX `ssize_t getrandom(void *buf, size_t buflen, unsigned int flags)` for CSPRNG, which uses /dev/urandom [3]. To store these large numbers (2^256), use GNU's GMP [4]. Note that `CHAR_BIT` from `<limits.h>` or `<climits>` will be useful to calculate our buffer size [5].
 
 Therefore:
 ```cpp
@@ -49,12 +49,38 @@ constexpr int ceil(double d) {
 }
 
 #define PRIVKEY_BUFF 256
-constexpr int pkbsz = mathutil::ceil((double) PRIVKEY_BUFF / 8);
-char privkeybuff[pkbsz];
+constexpr int pkbsz = mathutil::ceil((double) PRIVKEY_BUFF / CHAR_BIT);
+unsigned char privkeybuff[pkbsz];
 getrandom(addressBuff, pkbsz, 0);
 
-//Function to translate 
+/**
+ * Writes the bits in `c` to `bits`, up to `lim` bits.
+ */
+char* bitbufbincwrite(char* bits, unsigned char c, size_t lim) {
+    for(size_t i = 0; i < lim; ++i) {
+        *bits++ = '0' + ((c >> i) & 1);
+    }
+    return bits;
+}
 
+/**
+ * Writes `n` bits in `buf` to `bits`, as contiguous binary chars (e.g. "101001001"). Note that this means `bits` is not expected to be a null-terminated string. `bufsz` identifies the size of `buf`. 
+ */
+void bitbufbinwrite(char* bits, const unsigned char* buf, size_t bufsz, size_t n) {
+    assert(bufsz * CHAR_BIT >= n);
+    for(size_t i = 0; i < bufsz; ++i, ++buf, n-=CHAR_BIT) {
+        if(n > CHAR_BIT) {
+            bits = bitbufbincwrite(bits, *buf, CHAR_BIT);
+        } else {
+            bitbufbincwrite(bits, *buf, n);
+            return;
+        }
+    }
+}
+
+char bits[PRIVKEY_BUFF_BITS];
+printcharbuf(privkeybuff, pkbsz);
+bitbufbinwrite(bits, privkeybuff, pkbsz, PRIVKEY_BUFF_BITS);
 ```
 
 
