@@ -78,9 +78,15 @@ void bitbufbinwrite(char* bits, const unsigned char* buf, size_t bufsz, size_t n
     }
 }
 
-char bits[PRIVKEY_BUFF_BITS];
+char bits[PRIVKEY_BUFF_BITS + 1];
 printcharbuf(privkeybuff, pkbsz);
 bitbufbinwrite(bits, privkeybuff, pkbsz, PRIVKEY_BUFF_BITS);
+bits[PRIVKEY_BUFF_BITS + 1] = '\0'; //null-terminate for gmp
+
+const mpz_class SECP251K1N("115792089237316195423570985008687907852837564279074904382605163141518161494337");
+// while generate, compare mpz_class(bits), continue until less than SECP251K1N
+
+//Finally, a valid private key!
 ```
 
 
