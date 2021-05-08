@@ -89,6 +89,15 @@ const mpz_class SECP251K1N("1157920892373161954235709850086879078528375642790749
 //Finally, a valid private key!
 ```
 
+## ETH Public Key and Address Derivation
+
+```
+For a given private key,pr, the Ethereum addressA(pr) (a 160-bit value) to which it corresponds is defined as therightmost 160-bits of the Keccak hash of the corresponding ECDSA public key:(286)A(pr) =B96..255(KEC(ECDSAPUBKEY(pr)))
+[1]
+```
+
+Using our private key GMP-bignum, 
+
 
 ## References
 1. "Ethereum: A Secure Decentralised Generalised Transaction Ledger". https://ethereum.github.io/yellowpaper/paper.pdf
