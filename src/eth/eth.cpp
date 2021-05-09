@@ -68,21 +68,25 @@ int main() {
 
     //Generate hash
     eth::secp256k1::keccak256_hash khash;
-    //Grab the pointer up from the public key, as we ignore the first uncompressed bit
+    //Grab the pointer up from the public key, as we ignore the first uncompressed byte
     unsigned char* eth_pkey_in = pubkey.data + 1;
     size_t eth_khash_in_sz = sizeof(eth::secp256k1::unc_pubkey) - 1;
     crypto_hash_sha256(khash.data, eth_pkey_in, eth_khash_in_sz);
 
-    
-
     secp256k1_context_destroy(ctx);
-    
+
     char prvstr[500];
     char pubstr[500];
+    char pubkeyinstr[500];
+    char hashstr[500];
     writehexbytestostr(prvstr, prvkey.data, 32);
-    writehexbytestostr(pubstr, khash.data, 32);
+    writehexbytestostr(pubstr, pubkey.data, 65);
+    writehexbytestostr(pubkeyinstr, eth_pkey_in, 64);
+    writehexbytestostr(hashstr, khash.data, 32);
     cout << "Private Key: " << prvstr << '\n';
+    cout << "Public Key: " << pubstr << '\n';
+    cout << "Public Key [In]: " << pubkeyinstr << '\n';
     //Printing the last 20 bytes, which is the ETH address!
-    cout << "Address: 0x" << (pubstr+24) << '\n';
+    cout << "Address: 0x" << (hashstr+24) << '\n';
 }
 
