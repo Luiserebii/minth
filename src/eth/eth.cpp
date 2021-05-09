@@ -3,8 +3,12 @@
 #include <sodium.h>
 #include <iostream>
 #include <cassert>
+#include <ethash/keccak.hpp>
+#include <ethash/hash_types.hpp>
+#include <cstring>
 
 using std::cout;
+using std::memcpy;
 
 namespace eth {
 
@@ -27,7 +31,7 @@ typedef struct {
 
 unsigned char* genseckey(eth::secp256k1::seckey* sk) {
     //Fill our raw buffer with CSPRNG bytes from /dev/urandom
-    getrandom(sk, 32, 0);
+    getrandom(sk->data, 32, 0);
     //Mask off all unneeded bytes
     for(size_t i = 0; i < 32; ++i) {
         sk->data[i] &= 0xFF;
@@ -71,8 +75,11 @@ int main() {
     //Grab the pointer up from the public key, as we ignore the first uncompressed byte
     unsigned char* eth_pkey_in = pubkey.data + 1;
     size_t eth_khash_in_sz = sizeof(eth::secp256k1::unc_pubkey) - 1;
-    crypto_hash_sha256(khash.data, eth_pkey_in, eth_khash_in_sz);
 
+    ethash::hash256 ehash = ethash::keccak256(eth_pkey_in, eth_khash_in_sz);
+    memcpy(khash.data, ehash.str, sizeof(khash.data));
+//    crypto_hash_sha256(khash.data, eth_pkey_in, eth_khash_in_sz);
+    
     secp256k1_context_destroy(ctx);
 
     char prvstr[500];
