@@ -77,9 +77,12 @@ int main() {
 
     secp256k1_context_destroy(ctx);
     
-    char a[500];
-    writehexbytestostr(a, prvkey.data, 32);
+    char prvstr[500];
+    char pubstr[500];
+    writehexbytestostr(prvstr, prvkey.data, 32);
+    writehexbytestostr(pubstr, khash.data, 32);
+    cout << "Private Key: " << prvstr << '\n';
     //Printing the last 20 bytes, which is the ETH address!
-    cout << "0x" << (a+24) << '\n';
+    cout << "Address: 0x" << (pubstr+24) << '\n';
 }
 
