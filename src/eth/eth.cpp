@@ -1,7 +1,10 @@
 #include <sys/random.h>
 #include <secp256k1.h>
+#include <sodium.h>
 #include <iostream>
 #include <cassert>
+
+using std::cout;
 
 namespace eth {
 
@@ -14,6 +17,10 @@ typedef struct {
 typedef struct {
     unsigned char data[65];
 } unc_pubkey;
+
+typedef struct {
+    unsigned char data[32];
+} keccak256_hash;
 
 }
 }
@@ -28,11 +35,23 @@ unsigned char* genseckey(eth::secp256k1::seckey* sk) {
     return sk->data;
 }
 
+//OUT BUFF MUST BE AT LEAST TWICE SIZE BYTE BUFF
+//ONLY TAKING 8 BITS BTW!!!!
+void writehexbytestostr(char* out, const unsigned char* bytes, size_t bytes_sz) {
+    static char hextable[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+                              'B', 'C', 'D', 'E', 'F'};
+    for(size_t i = 0; i < bytes_sz; ++i) {
+        *out++ = hextable[(bytes[i] >> 4) & 0xF];
+        *out++ = hextable[bytes[i] & 0xF];
+    }
+    *out = '\0';
+}
+
 int main() {
     //Define our 32-bit private key
     eth::secp256k1::seckey prvkey;
     //Create secp256k1 context obj
-    secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_NONE);
+    secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
     //Generate a new one until valid
     while(!secp256k1_ec_seckey_verify(ctx, genseckey(&prvkey)))
         ;
@@ -47,9 +66,20 @@ int main() {
     size_t outputlen = sizeof(eth::secp256k1::unc_pubkey);
     secp256k1_ec_pubkey_serialize(ctx, pubkey.data, &outputlen, &secp_pubkey, SECP256K1_EC_UNCOMPRESSED);
 
-    secp256k1_context_destroy(ctx);
-    
+    //Generate hash
+    eth::secp256k1::keccak256_hash khash;
+    //Grab the pointer up from the public key, as we ignore the first uncompressed bit
+    unsigned char* eth_pkey_in = pubkey.data + 1;
+    size_t eth_khash_in_sz = sizeof(eth::secp256k1::unc_pubkey) - 1;
+    crypto_hash_sha256(khash.data, eth_pkey_in, eth_khash_in_sz);
+
     
 
+    secp256k1_context_destroy(ctx);
+    
+    char a[500];
+    writehexbytestostr(a, prvkey.data, 32);
+    //Printing the last 20 bytes, which is the ETH address!
+    cout << "0x" << (a+24) << '\n';
 }
 
