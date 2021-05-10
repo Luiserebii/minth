@@ -9,5 +9,4 @@ vitalik pls
 ```
 sudo apt install libgmp-dev
 sudo apt install libsecp256k1-dev
-sudo apt install libsodium-dev
 ```
