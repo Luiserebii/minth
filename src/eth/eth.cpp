@@ -1,8 +1,9 @@
 #include <sys/random.h>
 #include <secp256k1.h>
 #include <iostream>
-#include <assert.h>
 #include <ethash/keccak.h>
+
+#include <assert.h>
 #include <string.h>
 
 using std::cout;
@@ -17,8 +18,9 @@ typedef struct {
 
 typedef struct {
     unsigned char data[32];
-} eth_secp256k1_keccak256_hash;
+} eth_keccak256_hash;
 
+typedef eth_keccak256_hash eth_pubkey_khash;
 
 unsigned char* eth_secp256k1_randseckey(eth_secp256k1_seckey* sk) {
     //Fill our raw buffer with CSPRNG bytes from /dev/urandom
@@ -60,11 +62,19 @@ void eth_secp256k1_calculatepubkey(eth_secp256k1_unc_pubkey* pk, const secp256k1
     secp256k1_ec_pubkey_serialize(ctx, pk->data, &outputlen, &secp_pubkey, SECP256K1_EC_UNCOMPRESSED);
 }
 
-void eth_secp256k1_calculatepk_keccak(eth_secp256k1_keccak256_hash* kh, const eth_secp256k1_unc_pubkey* pk) {
-    //Grab the pointer up from the public key, as we ignore the first uncompressed byte
-    const unsigned char* eth_pkey_in = pk->data + 1;
-    ethash_hash256 ehash = ethash_keccak256(eth_pkey_in, 64);
+void eth_keccak_calculatepkhash(eth_keccak256_hash* kh, const unsigned char* data) {
+    ethash_hash256 ehash = ethash_keccak256(data, 64);
     memcpy(kh->data, ehash.str, 32);
+}
+
+void eth_pubkey_khash_calculate(eth_pubkey_khash* kh, const eth_secp256k1_unc_pubkey* pk) {
+    //Grab the pointer up from the public key, as we ignore the first uncompressed byte
+    const unsigned char* pk_data = pk->data + 1;
+    eth_keccak_calculatepkhash(kh, pk_data);
+}
+
+const unsigned char* eth_pubkey_khash_getaddress(const eth_pubkey_khash* kh) {
+    return kh->data+12;
 }
 
 int main() {
@@ -81,8 +91,8 @@ int main() {
     eth_secp256k1_calculatepubkey(&pubkey, ctx, &prvkey);
 
     //Generate hash
-    eth_secp256k1_keccak256_hash khash;
-    eth_secp256k1_calculatepk_keccak(&khash, &pubkey);
+    eth_keccak256_hash khash;
+    eth_pubkey_khash_calculate(&khash, &pubkey);
 
     secp256k1_context_destroy(ctx);
 
