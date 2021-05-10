@@ -4,7 +4,7 @@ CFLAGS= -g3 -Wall -Wextra -Wvla $(INCLUDE_FLAGS)
 CC=g++
 ETHASH_SRC=./lib/ethash-0.6.0/lib/keccak/keccak.c 
 MEME=./lib/ethash-0.6.0/lib/keccak/keccakf800.c
-OUT_PRG=ethwall
+OUT_PRG=minth
 
 compile:
 	$(CC) $(CFLAGS) ./src/*.cpp ./src/**/*.cpp -o $(OUT_PRG)
@@ -12,7 +12,9 @@ compile:
 eth:
 	mkdir -p ./build
 	cc -c $(CFLAGS) $(ETHASH_SRC) -o ./build/keccak.o
-	$(CC) $(CFLAGS) ./src/eth/eth.cpp ./build/keccak.o $(LINK_FLAGS) -o $(OUT_PRG)
+	cc -c $(CFLAGS) ./src/eth/eth.c -o ./build/eth.o
+	$(CC) $(CFLAGS) ./src/eth/main.cpp ./build/eth.o ./build/keccak.o $(LINK_FLAGS) -o $(OUT_PRG)
+
 
 
 clean: 

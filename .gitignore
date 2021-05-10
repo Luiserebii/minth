@@ -1,6 +1,6 @@
 *.swp
 *.swo
-ethwall
+minth
 compile_commands.json
 .clangd/
 test/test
