@@ -3,7 +3,6 @@
 #include <iterator>
 
 #include "../../include/eth/eth.h"
-#include "../../include/util/bytes.h"
 using std::string;
 using std::cout;
 using std::back_inserter;

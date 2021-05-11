@@ -80,7 +80,8 @@ void eth_pubkey_khash_writeeip55address(FILE* stream, const eth_pubkey_khash* kh
     char ehash_digits[41];
     eth_util_bytestohexstring(ehash_digits, (unsigned char*) ehash.str, 20);
 
-    //Finally, using the hash, write each char according to EIP-55
+    //Finally, using the hash, write each char according to EIP-55, checking if
+    //the character hex value of the hash is greater than 8
     for(int i = 0; i < 40; ++i) {
         if(isalpha(loweraddr[i]) && (minth_util_hexchartoi(ehash_digits[i]) >= 0x8)) {
             putc(toupper(loweraddr[i]), stream);
@@ -97,9 +98,10 @@ void eth_pubkey_khash_eip55addresstostring(char* out, const eth_pubkey_khash* kh
     //Hash the lowercase address
     union ethash_hash256 ehash = ethash_keccak256((unsigned char*) out, 40);
 
-    //Finally, using the hash, write each char according to EIP-55
+    //Finally, using the hash, write each char according to EIP-55, checking if
+    //the character hex value of the hash is greater than 8
     for(int i = 0; i < 40; ++i) {
-        if(isalpha(out[i]) && (ehash.str[i] >= 0x8)) {
+        if(isalpha(out[i]) && (minth_util_hexchartoi(ehash.str[i]) >= 0x8)) {
             out[i] = toupper(out[i]);
         }
     }
