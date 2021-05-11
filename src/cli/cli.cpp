@@ -50,16 +50,22 @@ void generate() {
 
     secp256k1_context_destroy(ctx);
 
-    cout << termcolor::bright_grey << "Private Key: " << termcolor::reset;
-    eth_util_writebytestohex(stdout, prvkey.data, 32), putchar('\n');
-    cout << termcolor::yellow << "Public Key (Uncompressed): " << termcolor::reset;
-    eth_util_writebytestohex(stdout, pubkey.data, 32), putchar('\n');
-    cout << termcolor::blue << "Keccak256 Hash: " << termcolor::reset;
-    eth_util_writebytestohex(stdout, khash.data, 32), putchar('\n');
-    cout << termcolor::bright_blue << "Address: " << termcolor::reset << "0x";
-    eth_util_writebytestohex(stdout, eth_pubkey_khash_getaddress(&khash), 32), putchar('\n');
-    cout << termcolor::green << "EIP-55 Encoded: " << termcolor::reset << "0x";
-    eth_pubkey_khash_writeeip55address(stdout, &khash), putchar('\n');
+    cout << "Private Key: " << termcolor::bright_grey;
+    eth_util_writebytestohex(stdout, prvkey.data, 32);
+    cout << '\n' << termcolor::reset << "Public Key (Uncompressed): " << termcolor::yellow;
+    eth_util_writebytestohex(stdout, pubkey.data, 32);
+    cout << '\n' << termcolor::reset;
+    cout << "Keccak256 Hash: " << termcolor::blue;
+    eth_util_writebytestohex(stdout, khash.data, 32);
+    cout << '\n' << termcolor::reset;
+    
+    cout << "Address: " << termcolor::bright_blue << "0x";
+    eth_util_writebytestohex(stdout, eth_pubkey_khash_getaddress(&khash), 20);
+    cout << '\n' << termcolor::reset;
+
+    cout << "EIP-55 Encoded: " << termcolor::green << "0x";
+    eth_pubkey_khash_writeeip55address(stdout, &khash);
+    cout << '\n' << termcolor::reset;
 }
 
 }
