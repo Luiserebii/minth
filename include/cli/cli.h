@@ -3,4 +3,5 @@
 
 namespace cli {
     int run(int argc, char* argv[]);
+    void generate();
 }

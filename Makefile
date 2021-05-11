@@ -9,16 +9,20 @@ CXX=g++
 ETHASH_SRC=./lib/ethash-0.6.0/lib/keccak/keccak.c 
 MINTH_C_SRC=./src/eth/eth.c
 
+OBJECT_DEPS=./build/eth.o ./build/keccak.o
+
 OUT_PRG=minth
 
-compile:
-	$(CXX) $(CXXFLAGS) ./src/*.cpp ./src/**/*.cpp -o $(OUT_PRG)
+compile: object_deps
+	$(CXX) $(CXXFLAGS) ./src/*.cpp ./src/**/*.cpp $(OBJECT_DEPS) $(LINK_FLAGS) -o $(OUT_PRG)
 
-eth:
+object_deps:
 	mkdir -p ./build
 	$(CC) -c $(CFLAGS) $(ETHASH_SRC) -o ./build/keccak.o
 	$(CC) -c $(CFLAGS) $(MINTH_C_SRC) -o ./build/eth.o
-	$(CXX) $(CXXFLAGS) ./src/eth/main.cpp ./build/eth.o ./build/keccak.o $(LINK_FLAGS) -o $(OUT_PRG)
+
+eth: object_deps
+	$(CXX) $(CXXFLAGS) ./src/eth/main.cpp $(OBJECT_DEPS) $(LINK_FLAGS) -o $(OUT_PRG)
 
 clean: 
 	rm $(OUT_PRG) && rm -rf build/*
