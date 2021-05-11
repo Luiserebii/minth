@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include <secp256k1.h>
 
 /**
@@ -73,6 +74,37 @@ void eth_pubkey_khash_calculate(eth_pubkey_khash* kh, const eth_secp256k1_unc_pu
  * from public key keccak256 hash.
  */
 const unsigned char* eth_pubkey_khash_getaddress(const eth_pubkey_khash* kh);
+
+/**
+ * Writes 40 characters to the stream, the EIP-55 encoded address of the public key.
+ */
+void eth_pubkey_khash_writeeip55address(FILE* stream, const eth_pubkey_khash* kh);
+
+/**
+ * Writes 41 characters to out, the EIP-55 encoded address of the public key and a
+ * null terminator.
+ */
+void eth_pubkey_khash_eip55addresstostring(char* out, const eth_pubkey_khash* kh);
+
+/**
+ * Writes bytes_sz * 2 + 1 characters to the char string located by out.
+ * Note that this function will only write the 8-bit value of each byte,
+ * ignoring any other values (therefore any char larger than 8-bits will
+ * have those ignored).
+ *
+ * The one off the end of the string is returned. If out at the start of the
+ * function were a, and out at the end were b, then the range of the written
+ * string would thus be [a, b).
+ */
+char* eth_util_bytestohexstring(char* out, const unsigned char* bytes, size_t bytes_sz);
+
+/**
+ * Writes bytes_sz * 2 + 1 characters to the FILE* located by stream.
+ * Note that this function will only write the 8-bit value of each byte,
+ * ignoring any other values (therefore any char larger than 8-bits will
+ * have those ignored).
+ */
+void eth_util_writebytestohex(FILE* stream, const unsigned char* bytes, size_t bytes_sz);
 
 #ifdef __cplusplus
 }
