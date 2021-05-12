@@ -16,12 +16,16 @@ int run(int argc, char* argv[]) {
     mainopts.add_options()
         ("h,help", "display this help and exit")
         ("g,generate", "generate a private key and display Ethereum data")
+        ("a,asm", "open a tmux/vim session with :make assembly play in a temporary dir")
     ;
 
     auto result = mainopts.parse(argc, argv);
 
     if(result.count("generate")) {
         cli::generate();
+        return 0;
+    } else if(result.count("asm")) {
+        system("./scripts/godbolt.sh");
         return 0;
     } else if(result.count("help")) {
         cout << mainopts.help() << endl;
