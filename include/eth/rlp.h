@@ -6,13 +6,14 @@ extern "C" {
 #endif
 
 #include "./vector-t.h"
+#include "./vector-uchar.h"
 
 enum minth_t_tag { MINTH_T_VECTOR_LIST, MINTH_T_BYTE_ARR };
 
 struct T {
     union {
         vector_t list;
-        unsigned char* byte_array;
+        vector_uchar byte_array;
     } value;
     enum minth_t_tag tag;
 };

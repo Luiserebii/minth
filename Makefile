@@ -24,7 +24,7 @@ object_deps:
 rlp_c:
 	$(CC) $(CFLAGS) -I./lib/C-STL-master/include ./src/eth/rlp.c ./src/eth/vector-t.c ./src/eth/vector-uchar.c ./lib/C-STL-master/src/memory.c -o $(OUT_PRG)
 
-rlp_h: 
+rlp_cxx: 
 	$(CC) $(CFLAGS) ./src/eth/rlp.cpp -o $(OUT_PRG)
 
 clean: 
