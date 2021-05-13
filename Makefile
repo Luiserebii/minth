@@ -21,8 +21,11 @@ object_deps:
 	$(CC) -c $(CFLAGS) $(ETHASH_SRC) -o ./build/keccak.o
 	$(CC) -c $(CFLAGS) $(MINTH_C_SRC) -o ./build/eth.o
 
-eth: object_deps
-	$(CXX) $(CXXFLAGS) ./src/eth/main.cpp $(OBJECT_DEPS) $(LINK_FLAGS) -o $(OUT_PRG)
+rlp_c:
+	$(CC) $(CFLAGS) -I./lib/C-STL-master/include ./src/eth/rlp.c ./src/eth/vector-t.c ./src/eth/vector-uchar.c ./lib/C-STL-master/src/memory.c -o $(OUT_PRG)
+
+rlp_h: 
+	$(CC) $(CFLAGS) ./src/eth/rlp.cpp -o $(OUT_PRG)
 
 clean: 
 	rm $(OUT_PRG) && rm -rf build/*
