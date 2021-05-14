@@ -1,5 +1,5 @@
-#ifndef MINTH_VECTOR_T_H
-#define MINTH_VECTOR_T_H
+#ifndef MINTH_VECTOR_RLP_T_H
+#define MINTH_VECTOR_RLP_T_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -7,7 +7,7 @@ extern "C" {
 
 #include <cstl/vector.h>
 
-declare_vector_class(vector_t, struct T)
+declare_vector_class(vector_rlp_t, struct minth_rlp_t)
 
 #ifdef __cplusplus
 }

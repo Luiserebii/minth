@@ -21,6 +21,8 @@ object_deps:
 	$(CC) -c $(CFLAGS) $(ETHASH_SRC) -o ./build/keccak.o
 	$(CC) -c $(CFLAGS) $(MINTH_C_SRC) -o ./build/eth.o
 
+rlp: rlp_c
+
 rlp_c:
 	$(CC) $(CFLAGS) -I./lib/C-STL-master/include ./src/eth/rlp.c ./src/eth/vector-t.c ./src/eth/vector-uchar.c ./lib/C-STL-master/src/memory.c -o $(OUT_PRG)
 

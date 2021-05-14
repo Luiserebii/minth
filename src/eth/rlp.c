@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 int main() {
-    vector_t list;
-    vector_t_init(&list);
-    printf("OwO: %lu\n", vector_t_capacity(&list));
+    vector_rlp_t list;
+    vector_rlp_t_init(&list);
+    printf("OwO: %lu\n", vector_rlp_t_capacity(&list));
 }
