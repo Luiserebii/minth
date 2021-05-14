@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "./vector-t.h"
+#include "./vector-rlp-t.h"
 #include "./vector-uchar.h"
 #include "./eth.h"
 #include <assert.h>
