@@ -10,6 +10,7 @@ extern "C" {
 #include "./eth.h"
 #include <assert.h>
 #include <math.h>
+#include <cstl/algorithm.h>
 
 enum minth_rlp_t_tag { MINTH_RLP_T_LIST, MINTH_RLP_T_BYTE_ARR };
 
@@ -21,76 +22,61 @@ struct minth_rlp_t {
     enum minth_rlp_t_tag tag;
 };
 
-void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e);
-
 /***/
 
-void minth_rlp_t_init_list(struct minth_rlp_t* t) {
-    vector_rlp_t_init(&t->value.list);
-    t->tag = MINTH_RLP_T_LIST;
-}
+/**
+ * Initialize a minth_rlp_t as a list (L).
+ */
+void minth_rlp_t_init_list(struct minth_rlp_t* t);
 
-void minth_rlp_t_init_list_empty(struct minth_rlp_t* t) {
-    vector_rlp_t_init(&t->value.list);
-    t->tag = MINTH_RLP_T_LIST;
-}
+/**
+ * Initialize a minth_rlp_t as an empty list (L).
+ *
+ * It should be noted that the implementation is no different from simply
+ * initializing a minth_rlp_t as a list, but it's more expressive this way.
+ */
+void minth_rlp_t_init_list_empty(struct minth_rlp_t* t);
 
-void minth_rlp_t_init_byte_array_empty(struct minth_rlp_t* t) {
-    vector_uchar_init(&t->value.byte_array);
-    t->tag = MINTH_RLP_T_BYTE_ARR;
-}
+/**
+ * Initialize a minth_rlp_t as an empty byte array (B).
+ */
+void minth_rlp_t_init_byte_array_empty(struct minth_rlp_t* t);
 
-void minth_rlp_t_init_byte_array_range(struct minth_rlp_t* t, const unsigned char* first, const unsigned char* last) {
-    vector_uchar_init_range(&t->value.byte_array, first, last);
-    t->tag = MINTH_RLP_T_BYTE_ARR;
-}
+/**
+ * Initialize a minth_rlp_t as a byte array (B) with [first, last) 
+ * unsigned char* bytes.
+ */
+void minth_rlp_t_init_byte_array_range(struct minth_rlp_t* t, const unsigned char* first, const unsigned char* last);
 
-void minth_rlp_t_init_byte_array_hexstring(struct minth_rlp_t* t, const char* first, const char* last) {
-    //Calculate amount of space needed and initialize
-    vector_uchar_init_capacity(&t->value.byte_array, ceil(((double)(last-first)/2)));
-    minth_util_hexstringtobytes(t->value.byte_array.avail, first, last);
-    t->tag = MINTH_RLP_T_BYTE_ARR;
-}
+/**
+ * Initialize a minth_rlp_t as a byte_array (B) with a hex string
+ * of [first, last) range.
+ */
+void minth_rlp_t_init_byte_array_hexstring(struct minth_rlp_t* t, const char* first, const char* last);
 
-void minth_rlp_t_init_from_string(struct minth_rlp_t* t, const char* rlp_str) {
-    const char* rlp_str_begin = rlp_str;
-    for(; *rlp_str; ++rlp_str)
-        ;
-    minth_rlp_t_init_from_string_range(t, rlp_str_begin, rlp_str);
-}
+/**
+ * Initialize a minth_rlp_t from a c-string.
+ * See minth_rlp_t_init_from_string.
+ */
+void minth_rlp_t_init_from_string(struct minth_rlp_t* t, const char* rlp_str);
 
-void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e) {
-    //Check if we have a list!
-    if(*rlp_str_b == '[') {
-        //We have an empty list if it's just 1 space apart.
-        if(rlp_str_e - rlp_str_b == 1) {
-            //Assert the end, just for checking
-            assert(*rlp_str_e == ']');
-            minth_rlp_t_init_list_empty(t);
-        } else {
-            
-        
-        
-        }
-    //Check if we have a byte array!
-    } else if(*rlp_str_b == '0') {
-        //Assert 0x prefix
-        assert(*(rlp_str_b + 1) == 'x');
-        if(rlp_str_e - rlp_str_b == 1) {
-            //An empty byte array, if just 0x!
-            minth_rlp_t_init_byte_array_empty(t);
-        } else {
-            //Note: This will break if last element is not part of the byte array! i.e. spaces,
-            //assume that each call is sanitized in terms of whitespace.
-            
-        
-        }
-    }
-}
+/**
+ * Initialize a minth_rlp_t from a string formatted under the following rules:
+ *    * [] represents the delimiters of a list
+ *    * 0x represents the prefix delimiter of a byte array
+ *    * Spaces must not be avaliable at the beginning or the end of the string.
+ *      *rlp_str_b and *rlp_str_e must be delimiters or non-whitespace 
+ *      characters.
+ *    * Spaces may exist within the outermost delimiters of a list, and between
+ *      list items.
+ *    * , represents the item delimiters of a list
+ */
+void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e);
 
-void minth_rlp_t_deinit(struct minth_rlp_t* t) {
-
-}
+/**
+ * Deinitializes a minth_rlp_t, recursively calling it if needed.
+ */
+void minth_rlp_t_deinit(struct minth_rlp_t* t);
 
 #ifdef __cplusplus
 }
