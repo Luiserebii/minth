@@ -39,7 +39,8 @@ void minth_rlp_t_init_byte_array_range(struct minth_rlp_t* t, const unsigned cha
 
 void minth_rlp_t_init_byte_array_hexstring(struct minth_rlp_t* t, const char* first, const char* last) {
     //Calculate amount of space needed and initialize
-    vector_uchar_init_capacity(&t->value.byte_array, ceil(((double)(last-first)/2)));
+    //This is probably a better fit for a function of vector_uchar
+    vector_uchar_init_size(&t->value.byte_array, ceil(((double)(last-first)/2)));
     minth_util_hexstringtobytes(t->value.byte_array.avail, first, last);
     t->tag = MINTH_RLP_T_BYTE_ARR;
 }
@@ -57,7 +58,7 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
         //We have an empty list if it's just 1 space apart.
         if(rlp_str_e - rlp_str_b == 1) {
             //Assert the end, just for checking
-            assert(*rlp_str_e == ']');
+            assert(*(rlp_str_e - 1) == ']');
             minth_rlp_t_init_list_empty(t);
         } else {
             //Work through each T in the list and recurse~ λ 
@@ -105,7 +106,7 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
         } else {
             //Note: This will break if last element is not part of the byte array! i.e. spaces,
             //assume that each call is sanitized in terms of whitespace.
-            minth_rlp_t_init_byte_array_hexstring(t, rlp_str_b, rlp_str_e);
+            minth_rlp_t_init_byte_array_hexstring(t, rlp_str_b + 2, rlp_str_e);
         }
     }
 }
