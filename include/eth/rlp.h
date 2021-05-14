@@ -70,6 +70,13 @@ void minth_rlp_t_init_from_string(struct minth_rlp_t* t, const char* rlp_str);
  *    * Spaces may exist within the outermost delimiters of a list, and between
  *      list items.
  *    * , represents the item delimiters of a list
+ *
+ * Examples:
+ *    * 0x1029
+ *    * [0xE4B29A0]
+ *    * [] (Empty list)
+ *    * 0x (Empty byte array)
+ *    * [0xA194,[],[[],0x293821B,0x843CA] 
  */
 void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e);
 

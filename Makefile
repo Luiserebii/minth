@@ -1,6 +1,6 @@
 CXX_INCLUDE_FLAGS=-I./lib/cxxopts-2.2.1/include -I./lib/termcolor-2.0.0/include 
 C_INCLUDE_FLAGS=-I./lib/ethash-0.6.0/include
-LINK_FLAGS=-lsecp256k1
+LINK_FLAGS=-lsecp256k1 -lm
 CFLAGS= -g3 -Wall -Wextra -Wvla $(C_INCLUDE_FLAGS)
 CXXFLAGS= -g3 -Wall -Wextra -Wvla $(CXX_INCLUDE_FLAGS) $(C_INCLUDE_FLAGS)
 CC=cc
@@ -23,8 +23,8 @@ object_deps:
 
 rlp: rlp_c
 
-rlp_c:
-	$(CC) $(CFLAGS) -I./lib/C-STL-master/include ./src/eth/rlp.c ./src/eth/vector-t.c ./src/eth/vector-uchar.c ./lib/C-STL-master/src/memory.c -o $(OUT_PRG)
+rlp_c: object_deps
+	$(CC) $(CFLAGS) -I./lib/C-STL-master/include ./src/eth/rlp.c ./src/eth/vector-t.c ./src/eth/vector-uchar.c ./lib/C-STL-master/src/memory.c $(OBJECT_DEPS) $(LINK_FLAGS) -o $(OUT_PRG)
 
 rlp_cxx: 
 	$(CC) $(CFLAGS) ./src/eth/rlp.cpp -o $(OUT_PRG)

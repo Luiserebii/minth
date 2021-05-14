@@ -6,6 +6,13 @@ int main() {
     vector_rlp_t list;
     vector_rlp_t_init(&list);
     printf("OwO: %lu\n", vector_rlp_t_capacity(&list));
+    printf("\n\n");
+    struct minth_rlp_t rlp;
+    //minth_rlp_t_init_from_string(&rlp, "[0xA393,[],[]]");
+    minth_rlp_t_init_from_string(&rlp, "[]");
+    minth_rlp_t_init_from_string(&rlp, "[[[[]]]]");
+    minth_rlp_t_init_from_string(&rlp, "[0xA393,0x00]");
+    minth_rlp_t_init_from_string(&rlp, "[0xA393,[],[]]");
 }
 
 void minth_rlp_t_init_list(struct minth_rlp_t* t) {
@@ -52,10 +59,14 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
             minth_rlp_t_init_list_empty(t);
         } else {
             //Work through each T in the list and recurse~ λ 
+            //NOTE: It might be neat to get the number of commas to know how much
+            //space to reserve! Just saying.
+            minth_rlp_t_init_list(t);
             ++rlp_str_b;
             const char* comm;
             const char* space;
-            for(;; rlp_str_b = space) {
+            struct minth_rlp_t e;
+            for(;; rlp_str_b = comm + 1) {
                 algorithm_find(rlp_str_b, rlp_str_e, ',', comm);
                 if(comm == rlp_str_e) {
                     //No more commas to zoom through! No more elements in the list, break!
@@ -67,7 +78,9 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
                 //Look for first non-space character to end, and parse!
                 algorithm_find(rlp_str_b, comm, ' ', space);
                 //We have a valid range [rlp_str_b, space), so:
-                minth_rlp_t_init_from_string_range(t, rlp_str_b, space);
+                minth_rlp_t_init_from_string_range(&e, rlp_str_b, space);
+                vector_rlp_t_push_back(&t->value.list, e);
+                
             }
             //No commas, but we still have one element regardless: 
             //Advance to first non-space
@@ -77,7 +90,8 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
             //ASSUMPTION: rlp_str_e - 1 is ']'
             algorithm_find(rlp_str_b, rlp_str_e - 1, ' ', space);
             //We have a valid range [rlp_str_b, space), so:
-            minth_rlp_t_init_from_string_range(t, rlp_str_b, space);
+            minth_rlp_t_init_from_string_range(&e, rlp_str_b, space);
+            vector_rlp_t_push_back(&t->value.list, e);
         }
     //Check if we have a byte array!
     } else if(*rlp_str_b == '0') {
