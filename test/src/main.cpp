@@ -62,17 +62,23 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         REQUIRE(rlp.tag == MINTH_RLP_T_LIST);
         REQUIRE(vector_rlp_t_size(&rlp.value.list) == 3);
 
+        unsigned char ba1[] = {0xA3, 0x93};
         struct minth_rlp_t* e = vector_rlp_t_begin(&rlp.value.list);
         REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
         REQUIRE(vector_uchar_size(&e->value.byte_array) == 2);
+        REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba1, 2) == 0);
 
+        unsigned char ba2[] = {0x5C, 0xEC, 0x20, 0xDB};
         ++e;
         REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
         REQUIRE(vector_uchar_size(&e->value.byte_array) == 4);
+        REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba2, 4) == 0);
 
+        unsigned char ba3[] = {0x00};
         ++e;
         REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
         REQUIRE(vector_uchar_size(&e->value.byte_array) == 1);
+        REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba3, 1) == 0);
 
     }
     minth_rlp_t_init_from_string(&rlp, "[0xA393,[],[]]");
