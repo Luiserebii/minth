@@ -1,6 +1,7 @@
 #include "../../include/eth/rlp.h"
 #include "../../include/eth/vector-rlp-t.h"
 #include <stdio.h>
+#include <string.h>
 /*
 int main() {
     vector_rlp_t list;
@@ -40,8 +41,10 @@ void minth_rlp_t_init_byte_array_range(struct minth_rlp_t* t, const unsigned cha
 void minth_rlp_t_init_byte_array_hexstring(struct minth_rlp_t* t, const char* first, const char* last) {
     //Calculate amount of space needed and initialize
     //This is probably a better fit for a function of vector_uchar
-    vector_uchar_init_size(&t->value.byte_array, ceil(((double)(last-first)/2)));
-    minth_util_hexstringtobytes(t->value.byte_array.avail, first, last);
+    size_t sz = ceil(((double)(last-first)/2));
+    vector_uchar_init_size(&t->value.byte_array, sz);
+    memset(t->value.byte_array.head, 0, sz);
+    minth_util_hexstringtobytes(t->value.byte_array.head, first, last);
     t->tag = MINTH_RLP_T_BYTE_ARR;
 }
 

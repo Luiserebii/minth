@@ -31,10 +31,7 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
 
         REQUIRE(rlp.tag == MINTH_RLP_T_BYTE_ARR);
         REQUIRE(vector_uchar_size(&rlp.value.byte_array) == 2);
-        unsigned char* arr = vector_uchar_begin(&rlp.value.byte_array); 
-        print_uchar_arr(b, 2);
-        print_uchar_arr(arr, 2);
-        REQUIRE(memcmp(arr, b, 2) == 0);
+        REQUIRE(memcmp(vector_uchar_begin(&rlp.value.byte_array), b, 2) == 0);
     }
 
     SECTION("[] (empty list)") {

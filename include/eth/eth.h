@@ -91,6 +91,9 @@ void eth_pubkey_khash_eip55addresstostring(char* out, const eth_pubkey_khash* kh
  * Writes the hex string along [b, e) to the byte array at bytes. Every two characters
  * are stored into a single element of the byte array. This function could very well
  * overrun the bytes buffer: **PLEASE** ensure that (e-b)/2 < the size of bytes.
+ *
+ * The unsigned char* bytes is required to be zero-initialized, otherwise the call
+ * to this function will cause a bad write.
  **/
 void minth_util_hexstringtobytes(unsigned char* bytes, const char* b, const char* e);
 
