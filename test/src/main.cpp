@@ -81,8 +81,64 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba3, 1) == 0);
 
     }
-    minth_rlp_t_init_from_string(&rlp, "[0xA393,[],[]]");
-    minth_rlp_t_init_from_string(&rlp, "[0xA393,0x843CAB[],[[]]],0xFF]");
 
-    REQUIRE(2==2);
+    SECTION("[0xBA95,[],[]]") {
+        minth_rlp_t_init_from_string(&rlp, "[0xBA95,[],[]]");
+
+        REQUIRE(rlp.tag == MINTH_RLP_T_LIST);
+        REQUIRE(vector_rlp_t_size(&rlp.value.list) == 3);
+
+        unsigned char b[] = {0xBA, 0x95};
+        struct minth_rlp_t* e = vector_rlp_t_begin(&rlp.value.list);
+        REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
+        REQUIRE(vector_uchar_size(&e->value.byte_array) == 2);
+        REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), b, 2) == 0);
+
+        ++e;
+        REQUIRE(e->tag == MINTH_RLP_T_LIST);
+        REQUIRE(vector_rlp_t_size(&e->value.list) == 0);
+
+        ++e;
+        REQUIRE(e->tag == MINTH_RLP_T_LIST);
+        REQUIRE(vector_rlp_t_size(&e->value.list) == 0);
+        
+    }
+
+    SECTION("[0xDA87,0xE43CAB,[],[[]]],0xFF]") {
+        minth_rlp_t_init_from_string(&rlp, "[0xDA87,0xE43CABA,[],[[]],0xFF]");
+        
+        REQUIRE(rlp.tag == MINTH_RLP_T_LIST);
+        REQUIRE(vector_rlp_t_size(&rlp.value.list) == 5);
+
+        unsigned char ba1[] = {0xDA, 0x87};
+        struct minth_rlp_t* e = vector_rlp_t_begin(&rlp.value.list);
+        REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
+        REQUIRE(vector_uchar_size(&e->value.byte_array) == 2);
+        REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba1, 2) == 0);
+
+        unsigned char ba2[] = {0xE4, 0x3C, 0xAB, 0xA0};
+        ++e;
+        REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
+        REQUIRE(vector_uchar_size(&e->value.byte_array) == 4);
+        REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba2, 4) == 0);
+
+        ++e;
+        REQUIRE(e->tag == MINTH_RLP_T_LIST);
+        REQUIRE(vector_rlp_t_size(&e->value.list) == 0);
+        
+        ++e;
+        REQUIRE(e->tag == MINTH_RLP_T_LIST);
+        REQUIRE(vector_rlp_t_size(&e->value.list) == 1);
+
+        struct minth_rlp_t* level = vector_rlp_t_begin(&e->value.list);
+        REQUIRE(level->tag == MINTH_RLP_T_LIST);
+        REQUIRE(vector_rlp_t_size(&level->value.list) == 0);
+        
+        unsigned char ba3[] = {0xFF};
+        ++e;
+        REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
+        REQUIRE(vector_uchar_size(&e->value.byte_array) == 1);
+        REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba3, 1) == 0);
+    }
+
 }
