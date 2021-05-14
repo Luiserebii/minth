@@ -55,8 +55,8 @@ void minth_rlp_t_init_from_string(struct minth_rlp_t* t, const char* rlp_str) {
 void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e) {
     //Check if we have a list!
     if(*rlp_str_b == '[') {
-        //We have an empty list if it's just 1 space apart.
-        if(rlp_str_e - rlp_str_b == 1) {
+        //We have an empty list if it's just []
+        if(rlp_str_e - rlp_str_b == 2) {
             //Assert the end, just for checking
             assert(*(rlp_str_e - 1) == ']');
             minth_rlp_t_init_list_empty(t);
