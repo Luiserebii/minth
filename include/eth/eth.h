@@ -30,7 +30,7 @@ typedef struct {
 } eth_keccak256_hash;
 
 /**
- * ETH keccak256 hash of public key data type. 
+ * Ethereum keccak256 hash of public key data type. 
  *
  * As this is a special kind of a keccak256 hash, it is typedef'd to express 
  * the unique functions this data type has (e.g. getting address)
@@ -82,9 +82,17 @@ void eth_pubkey_khash_writeeip55address(FILE* stream, const eth_pubkey_khash* kh
 
 /**
  * Writes 41 characters to out, the EIP-55 encoded address of the public key and a
- * null terminator.
+ * null terminator. Note that this function could very well overrun out: **PLEASE**
+ * ensure that the out buffer can store them.
  */
 void eth_pubkey_khash_eip55addresstostring(char* out, const eth_pubkey_khash* kh);
+
+/**
+ * Writes the hex string along [b, e) to the byte array at bytes. Every two characters
+ * are stored into a single element of the byte array. This function could very well
+ * overrun the bytes buffer: **PLEASE** ensure that (e-b)/2 < the size of bytes.
+ **/
+void minth_util_hexstringtobytes(unsigned char* bytes, const char* b, const char* e);
 
 /**
  * Writes bytes_sz * 2 + 1 characters to the char string located by out.
@@ -95,6 +103,9 @@ void eth_pubkey_khash_eip55addresstostring(char* out, const eth_pubkey_khash* kh
  * The one off the end of the string is returned. If out at the start of the
  * function were a, and out at the end were b, then the range of the written
  * string would thus be [a, b).
+ *
+ * Note that this function could very well overwrite the out buffer: **PLEASE**
+ * ensure that out can store bytes_z * 2 + 1 characters.
  */
 char* eth_util_bytestohexstring(char* out, const unsigned char* bytes, size_t bytes_sz);
 

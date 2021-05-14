@@ -70,6 +70,30 @@ static int minth_util_hexchartoi(char c) {
     return hextable[(unsigned char) c];
 }
 
+static unsigned char minth_util_hexchartouchar(char c) {
+    static unsigned char hextable[] = {[(unsigned char) '0']=0, [(unsigned char) '1']=1, 
+                             [(unsigned char) '2']=2, [(unsigned char) '3']=3, 
+                             [(unsigned char) '4']=4, [(unsigned char) '5']=5,
+                             [(unsigned char) '6']=6, [(unsigned char) '7']=7, 
+                             [(unsigned char) '8']=8, [(unsigned char) '9']=9, 
+                             [(unsigned char) 'A']=10, [(unsigned char) 'B']=11,
+                             [(unsigned char) 'C']=12, [(unsigned char) 'D']=13, 
+                             [(unsigned char) 'E']=14, [(unsigned char) 'F']=15};
+    return hextable[(unsigned char) c];
+}
+
+void minth_util_hexstringtobytes(unsigned char* bytes, const char* b, const char* e) {
+    size_t i = 0;
+    for(; e - b >= 2; b+=2, ++i) {
+        bytes[i] |= (minth_util_hexchartouchar(*b)) << 4;
+        bytes[i] |= minth_util_hexchartouchar(*(b + 1));
+    }
+    if(b != e) {
+        //We have an odd number of bytes, write the last one
+        bytes[i] |= (minth_util_hexchartouchar(*b)) << 4;
+    }
+}
+
 void eth_pubkey_khash_writeeip55address(FILE* stream, const eth_pubkey_khash* kh) {
     char loweraddr[41];
     eth_util_bytestohexstring(loweraddr, eth_pubkey_khash_getaddress(kh), 20);

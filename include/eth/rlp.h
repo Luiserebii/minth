@@ -7,7 +7,9 @@ extern "C" {
 
 #include "./vector-t.h"
 #include "./vector-uchar.h"
+#include "./eth.h"
 #include <assert.h>
+#include <math.h>
 
 enum minth_rlp_t_tag { MINTH_RLP_T_LIST, MINTH_RLP_T_BYTE_ARR };
 
@@ -43,11 +45,17 @@ void minth_rlp_t_init_byte_array_range(struct minth_rlp_t* t, const unsigned cha
     t->tag = MINTH_RLP_T_BYTE_ARR;
 }
 
+void minth_rlp_t_init_byte_array_hexstring(struct minth_rlp_t* t, const char* first, const char* last) {
+    //Calculate amount of space needed and initialize
+    vector_uchar_init_capacity(&t->value.byte_array, ceil(((double)(last-first)/2)));
+    minth_util_hexstringtobytes(t->value.byte_array.avail, first, last);
+    t->tag = MINTH_RLP_T_BYTE_ARR;
+}
+
 void minth_rlp_t_init_from_string(struct minth_rlp_t* t, const char* rlp_str) {
     const char* rlp_str_begin = rlp_str;
-    for(; *rlp_str; ++rlp_str) {
-        
-    }
+    for(; *rlp_str; ++rlp_str)
+        ;
     minth_rlp_t_init_from_string_range(t, rlp_str_begin, rlp_str);
 }
 
@@ -60,7 +68,7 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
             assert(*rlp_str_e == ']');
             minth_rlp_t_init_list_empty(t);
         } else {
-        
+            
         
         
         }
@@ -72,11 +80,16 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
             //An empty byte array, if just 0x!
             minth_rlp_t_init_byte_array_empty(t);
         } else {
-        
-        
+            //Note: This will break if last element is not part of the byte array! i.e. spaces,
+            //assume that each call is sanitized in terms of whitespace.
+            
         
         }
     }
+}
+
+void minth_rlp_t_deinit(struct minth_rlp_t* t) {
+
 }
 
 #ifdef __cplusplus
