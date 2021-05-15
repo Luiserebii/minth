@@ -125,7 +125,7 @@ const char* minth_rlp_t_parse_rlp_t_elements(struct minth_rlp_t_parsing_data* pd
         ;
     //If we have a [, we want to recursively find the last.
     if(*pd->b == '[') {
-        const char* t = ++pd->b;
+        const char* t = pd->b + 1;
         for(size_t bracket_stack = 1; bracket_stack > 0 && t != pd->e; ++t) {
             if(*t == '[') {
                 ++bracket_stack;
