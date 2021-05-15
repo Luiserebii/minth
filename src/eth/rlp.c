@@ -95,7 +95,7 @@ void minth_rlp_t_parse_rlp_t(struct minth_rlp_t_parsing_data* pd) {
             assert(*(pd->e) == ']');
             pd->token_type = MINTH_RLP_T_LIST_EMPTY_TOKEN;
         } else {
-            pd->token_type = MINTH_RLP_T_BYTE_ARRAY_FULL_TOKEN;
+            pd->token_type = MINTH_RLP_T_LIST_FULL_TOKEN;
         }
     } else if(*pd->b == '0') {
         assert(*(pd->b + 1) == 'x');
@@ -142,11 +142,58 @@ const char* minth_rlp_t_parse_rlp_t_elements(struct minth_rlp_t_parsing_data* pd
         return comm == end ? end : comm + 1;
             
     } else {
-        
+        const char* end = pd->e;
+        algorithm_find(pd->b, end, ',', pd->e);
+        if(pd->e == end) {
+            //Move back from any whitespace
+            for(; *(pd->e - 1) == ' '; --pd->e)
+                ;
+            return end;
+        } else {
+            return pd->e + 1;
+        }
     }
-    
 }
 
+/**
+ * Takes elements and returns the first found element into pd.
+ * Returns a pointer to the next element after the comma;
+ * returns a pointer to the end if it is the last element otherwise.
+ */
+void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e) {
+    struct minth_rlp_t_parsing_data pd = {rlp_str_b, rlp_str_e, 0};
+    minth_rlp_t_parse_rlp_t(&pd);
+    switch(pd.token_type) {
+        case MINTH_RLP_T_LIST_EMPTY_TOKEN:
+            minth_rlp_t_init_list_empty(t);
+            break;
+        case MINTH_RLP_T_BYTE_ARRAY_EMPTY_TOKEN:
+            minth_rlp_t_init_byte_array_empty(t);
+            break;
+        case MINTH_RLP_T_BYTE_ARRAY_FULL_TOKEN:
+            minth_rlp_t_init_byte_array_hexstring(t, pd.b + 2, pd.e);
+            break;
+        case MINTH_RLP_T_LIST_FULL_TOKEN:
+            minth_rlp_t_parse_rlp_t_list_full(&pd);
+            minth_rlp_t_init_list(t);
+            //Obtain each element and then do the thing lol
+            const char* end = pd.e;
+            struct minth_rlp_t e;
+            for(;;) {
+                const char* ret = minth_rlp_t_parse_rlp_t_elements(&pd);
+                minth_rlp_t_init_from_string_range(&e, pd.b, pd.e);
+                vector_rlp_t_push_back(&t->value.list, e);
+                if(ret == end) {
+                    break;
+                }
+            }
+            break;
+        default:
+            assert(0);
+            break;
+    }
+}
+/*
 void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e) {
     //Check if we have a list!
     if(*rlp_str_b == '[') {
@@ -205,7 +252,7 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
         }
     }
 }
-
+*/
 /* TODO: Finish
 void minth_rlp_t_deinit(struct minth_rlp_t* t) {
 
