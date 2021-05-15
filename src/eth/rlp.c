@@ -2,22 +2,7 @@
 #include "../../include/eth/vector-rlp-t.h"
 #include <stdio.h>
 #include <string.h>
-/*
-int main() {
-    vector_rlp_t list;
-    vector_rlp_t_init(&list);
-    printf("OwO: %lu\n", vector_rlp_t_capacity(&list));
-    printf("\n\n");
-    struct minth_rlp_t rlp;
-    minth_rlp_t_init_from_string(&rlp, "0x");
-    minth_rlp_t_init_from_string(&rlp, "0xA291");
-    minth_rlp_t_init_from_string(&rlp, "[]");
-    minth_rlp_t_init_from_string(&rlp, "[[[[]]]]");
-    minth_rlp_t_init_from_string(&rlp, "[0xA393,0x00]");
-    minth_rlp_t_init_from_string(&rlp, "[0xA393,[],[]]");
-    minth_rlp_t_init_from_string(&rlp, "[0xA393,0x843CAB[],[[]]],0xFF]");
-}
-*/
+
 void minth_rlp_t_init_list(struct minth_rlp_t* t) {
     vector_rlp_t_init(&t->value.list);
     t->tag = MINTH_RLP_T_LIST;
@@ -197,8 +182,19 @@ void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_s
     }
 }
 
-/* TODO: Finish
 void minth_rlp_t_deinit(struct minth_rlp_t* t) {
-
+    switch(t->tag) {
+        case MINTH_RLP_T_BYTE_ARR:
+            vector_uchar_deinit(&t->value.byte_array);
+            break;
+        case MINTH_RLP_T_LIST: {
+            struct minth_rlp_t* b = vector_rlp_t_begin(&t->value.list);
+            struct minth_rlp_t* e = vector_rlp_t_end(&t->value.list);
+            for(; b != e; ++b) {
+                minth_rlp_t_deinit(b);
+            }
+            vector_rlp_t_deinit(&t->value.list);
+            break;
+        }
+    }
 }
-*/

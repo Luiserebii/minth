@@ -8,12 +8,6 @@ TEST_CASE("ETH Private Key Generation", "[meme]") {
     REQUIRE(1 == 1);
 
 }
-void print_uchar_arr(const unsigned char* arr, size_t sz) {
-    for(size_t i = 0; i < sz; ++i) {
-        printf("%x", arr[i]);
-    }
-    putchar('\n');
-}
 
 TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
     struct minth_rlp_t rlp;
@@ -23,6 +17,8 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
 
         REQUIRE(rlp.tag == MINTH_RLP_T_BYTE_ARR);
         REQUIRE(vector_uchar_size(&rlp.value.byte_array) == 0);
+
+        minth_rlp_t_deinit(&rlp);
     }
 
     SECTION("0xA291 (a valid byte array)") {
@@ -32,6 +28,8 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         REQUIRE(rlp.tag == MINTH_RLP_T_BYTE_ARR);
         REQUIRE(vector_uchar_size(&rlp.value.byte_array) == 2);
         REQUIRE(memcmp(vector_uchar_begin(&rlp.value.byte_array), b, 2) == 0);
+        
+        minth_rlp_t_deinit(&rlp);
     }
 
     SECTION("[] (empty list)") {
@@ -39,6 +37,8 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
 
         REQUIRE(rlp.tag == MINTH_RLP_T_LIST);
         REQUIRE(vector_rlp_t_size(&rlp.value.list) == 0);
+        
+        minth_rlp_t_deinit(&rlp);
     }
 
     SECTION("[[[]]] (nested lists)") {
@@ -54,6 +54,8 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         e = vector_rlp_t_begin(&e->value.list);
         REQUIRE(e->tag == MINTH_RLP_T_LIST);
         REQUIRE(vector_rlp_t_size(&e->value.list) == 0);
+        
+        minth_rlp_t_deinit(&rlp);
     }
 
     SECTION("[0xA393,0x5CEC20DB,0x00]") {
@@ -80,6 +82,7 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         REQUIRE(vector_uchar_size(&e->value.byte_array) == 1);
         REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba3, 1) == 0);
 
+        minth_rlp_t_deinit(&rlp);
     }
 
     SECTION("[0xBA95,[],[]]") {
@@ -102,6 +105,7 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         REQUIRE(e->tag == MINTH_RLP_T_LIST);
         REQUIRE(vector_rlp_t_size(&e->value.list) == 0);
         
+        minth_rlp_t_deinit(&rlp);
     }
 
     SECTION("[0xDA87,0xE43CAB,[],[[]]],0xFF]") {
@@ -139,6 +143,8 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         REQUIRE(e->tag == MINTH_RLP_T_BYTE_ARR);
         REQUIRE(vector_uchar_size(&e->value.byte_array) == 1);
         REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba3, 1) == 0);
+        
+        minth_rlp_t_deinit(&rlp);
     }
 
     SECTION("[0xABCD,[0x00,[0xF388,[]],[]],0xFF]") {
@@ -189,9 +195,7 @@ TEST_CASE("Testing Struct RLP_T", "[rlp_t]") {
         REQUIRE(vector_uchar_size(&e->value.byte_array) == 1);
         REQUIRE(memcmp(vector_uchar_begin(&e->value.byte_array), ba4, 1) == 0);
 
-        
-
-
+        minth_rlp_t_deinit(&rlp);
     }
 
 }
