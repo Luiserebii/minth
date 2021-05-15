@@ -55,6 +55,98 @@ void minth_rlp_t_init_from_string(struct minth_rlp_t* t, const char* rlp_str) {
     minth_rlp_t_init_from_string_range(t, rlp_str_begin, rlp_str);
 }
 
+/**
+ * Parsing grammar:
+ *    * rlp-t:
+ *        * rlp-t-list
+ *        * rlp-byte-array
+ *    * rlp-t-list:
+ *        * rlp-t-list-empty
+ *        * [rlp-t-list-elements]
+ *    * rlp-t-list-empty:
+ *        * []
+ *    * rlp-t-list-elements:
+ *        * rlp-t
+ *        * rlp-t-list-elements,rlp-t
+ *    * rlp-byte-array:
+ *        * 0xrlp-bytes
+ *    * rlp-bytes:
+ *        * rlp-byte
+ *        * rlp-bytesrlp-byte
+ *    * rlp-byte: one of
+ *        * 0 1 2 3 4 5 6 7 8 9 A B C D E F
+ *
+ */
+enum minth_rlp_t_parsing_token_type { MINTH_RLP_T_LIST_EMPTY_TOKEN, MINTH_RLP_T_LIST_FULL_TOKEN,
+                                        MINTH_RLP_T_BYTE_ARRAY_EMPTY_TOKEN, 
+                                        MINTH_RLP_T_BYTE_ARRAY_FULL_TOKEN,
+                                        MINTH_RLP_T_LIST_ELEMENTS_TOKEN,
+                                        MINTH_RLP_T_LIST_ELEMENT_TOKEN };
+
+struct minth_rlp_t_parsing_data {
+    const char* b;
+    const char* e;
+    enum minth_rlp_t_parsing_token_type token_type;
+};
+
+void minth_rlp_t_parse_rlp_t(struct minth_rlp_t_parsing_data* pd) {
+    if(*pd->b == '[') {
+        if(pd->e - pd->b == 2) {
+            assert(*(pd->e) == ']');
+            pd->token_type = MINTH_RLP_T_LIST_EMPTY_TOKEN;
+        } else {
+            pd->token_type = MINTH_RLP_T_BYTE_ARRAY_FULL_TOKEN;
+        }
+    } else if(*pd->b == '0') {
+        assert(*(pd->b + 1) == 'x');
+        if(pd->e - pd->b == 2) {
+            assert(*(pd->e-1) == 'x');
+            pd->token_type = MINTH_RLP_T_BYTE_ARRAY_EMPTY_TOKEN;
+        } else {
+            pd->token_type = MINTH_RLP_T_BYTE_ARRAY_FULL_TOKEN;
+        }
+    }
+}
+
+void minth_rlp_t_parse_rlp_t_list_full(struct minth_rlp_t_parsing_data* pd) {
+    ++pd->b;
+    --pd->e;
+    pd->token_type = MINTH_RLP_T_LIST_ELEMENTS_TOKEN;
+}
+
+/**
+ * Takes elements and returns the first found element into pd.
+ * Returns a pointer to the next element after the comma;
+ * returns a pointer to the end if it is the last element otherwise.
+ */
+const char* minth_rlp_t_parse_rlp_t_elements(struct minth_rlp_t_parsing_data* pd) {
+    //Skip whitespace
+    for(; *pd->b == ' '; ++pd->b)
+        ;
+    //If we have a [, we want to recursively find the last.
+    if(*pd->b == '[') {
+        const char* t = ++pd->b;
+        for(size_t bracket_stack = 1; bracket_stack > 0 && t != pd->e; ++t) {
+            if(*t == '[') {
+                ++bracket_stack;
+            } else if(*t == ']') {
+                --bracket_stack;
+            }
+        }
+        const char* end = pd->e;
+        pd->e = t;
+
+        //If there are more commas afterwards, return after, else end
+        const char* comm; 
+        algorithm_find(pd->e, end, ',', comm);
+        return comm == end ? end : comm + 1;
+            
+    } else {
+        
+    }
+    
+}
+
 void minth_rlp_t_init_from_string_range(struct minth_rlp_t* t, const char* rlp_str_b, const char* rlp_str_e) {
     //Check if we have a list!
     if(*rlp_str_b == '[') {
