@@ -10,7 +10,7 @@ ETHASH_SRC=../lib/ethash-0.6.0/lib/keccak/keccak.c
 MINTH_C_SRC=../src/eth/eth.c 
 CSTL_SRC=../lib/C-STL-master/src/memory.c 
 
-OBJECT_DEPS=./build/eth.o ./build/keccak.o ./build/memory.o ./build/rlp.o ./build/vector-rlp-t.o ./build/vector-uchar.o
+OBJECT_DEPS=./build/eth.o ./build/keccak.o ./build/memory.o ./build/rlp.o ./build/rlp-parse.o ./build/vector-rlp-t.o ./build/vector-uchar.o
 
 OUT_PRG=test
 
@@ -26,6 +26,7 @@ object_deps:
 	$(CC) -c $(CFLAGS) $(MINTH_C_SRC) -o ./build/eth.o
 	$(CC) -c $(CFLAGS) $(CSTL_SRC) -o ./build/memory.o
 	$(CC) -c $(CFLAGS) ../src/eth/rlp.c -o ./build/rlp.o
+	$(CC) -c $(CFLAGS) ../src/eth/rlp-parse.c -o ./build/rlp-parse.o
 	$(CC) -c $(CFLAGS) ../src/eth/vector-rlp-t.c -o ./build/vector-rlp-t.o
 	$(CC) -c $(CFLAGS) ../src/eth/vector-uchar.c -o ./build/vector-uchar.o
 
