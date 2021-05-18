@@ -1,0 +1,3 @@
+[submodule "lib/aether"]
+	path = lib/aether
+	url = https://serebii.io:2501/Luiserebii/aether

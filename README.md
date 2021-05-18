@@ -10,6 +10,18 @@ vitalik pls
 
 Write what you need to on the buffer on the left. Use `:make` on the rightmost buffer and navigate through the assembly output files! The rightmost buffer is open to the temporary directory, so `:e` tabbing or something similar (fzf) can guide you to them.
 
+## Development Notes
+
+Update libaether:
+```
+git submodule update --remote
+```
+
+Setup environment to run minth:
+```
+source ./scripts/setup.sh
+```
+
 ## Installation
 
 ```

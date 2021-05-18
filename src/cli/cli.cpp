@@ -4,7 +4,7 @@
 #include <termcolor/termcolor.hpp>
 
 #include "../../include/cli/cli.h"
-#include "../../include/eth/eth.h"
+#include <aether/eth/eth.h>
 
 using std::cout;
 using std::endl;
